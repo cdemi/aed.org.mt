@@ -250,3 +250,5 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/src/aed.com.mt/Properties/PublishProfiles
+/src/aed.com.mt/wwwroot/js/*.min.js
