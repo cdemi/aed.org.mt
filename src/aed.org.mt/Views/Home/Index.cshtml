@@ -11,6 +11,7 @@
 <div class="row">
     <div class="col-md-12">
         <h2>AEDs in the Map</h2>
+        <div id="location"></div>
         <ul>
             <li><a href="#">AED 1</a></li>
             <li><a href="#">AED 2</a></li>
@@ -29,7 +30,7 @@
             locationName: 'Gaming Innovation Group Offices'
         },
         {
-            lat: 35.825692, 
+            lat: 35.825692,
             lng: 14.524733,
             inCharge: 'Christopher Demicoli',
             locationName: 'My House'
@@ -42,6 +43,7 @@
         }];
 
         var map;
+        var markers = [];
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 35.922337, lng: 14.388411 },
@@ -50,11 +52,11 @@
                 fullscreenControl: true
             });
 
-            var markers = []
             for (var i in aedLocations) {
                 markers.push(new google.maps.Marker({
                     position: { lat: aedLocations[i].lat, lng: aedLocations[i].lng },
                     title: aedLocations[i].inCharge,
+                    locationName: aedLocations[i].locationName,
                     map: map
                 }));
             }
@@ -64,8 +66,6 @@
                 bounds.extend(markers[i].getPosition());
             }
 
-            map.fitBounds(bounds);
-
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -74,12 +74,46 @@
                         lng: position.coords.longitude
                     };
 
+                    markers.push(new google.maps.Marker({
+                        position: pos,
+                        title: 'Your Location',
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 5
+                        }
+                    }));
+
                     map.setCenter(pos);
+                    map.setZoom(17);
+
+                    google.maps.event.addListener(map, 'tilesloaded', function () {
+                        var anyAEDsNear = false;
+                        for (var i = 0; i < markers.length; i++) {
+                            if (map.getBounds().contains(markers[i].getPosition())) {
+                                anyAEDsNear = true;
+                                break;
+                            }
+                        }
+
+                        if (!anyAEDsNear)
+                            map.fitBounds(bounds);
+                    });
+
+                }, function () {
+                    map.fitBounds(bounds);
                 });
+            }
+            else {
+                map.fitBounds(bounds);
             }
 
             map.addListener('bounds_changed', function () {
-                //$("#location").html(JSON.stringify(map.getBounds()));
+                $("#location").html("");
+                for (var i = 0; i < markers.length; i++) {
+                    if (map.getBounds().contains(markers[i].getPosition()))
+                        $("#location").html($("#location").html() + markers[i].locationName + "<br/>");
+                }
             });
         }
 
