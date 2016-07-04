@@ -1,5 +1,5 @@
-﻿using aed.com.mt;
-using aed.com.mt.Models;
+﻿using aed.org.mt;
+using aed.org.mt.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
@@ -24,7 +24,9 @@ namespace aed.org.mt.Controllers
         {
             var query = new TableQuery<AEDEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
             var aeds = await table.ExecuteQueryAsync(query);
-            return View();
+            return View(new HomeIndexModel {
+                AEDs = aeds
+            });
         }
 
         public async Task<IActionResult> About()

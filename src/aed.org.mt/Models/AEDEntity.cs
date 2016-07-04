@@ -1,7 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
-namespace aed.com.mt.Models
+namespace aed.org.mt.Models
 {
     public class AEDEntity : TableEntity
     {
