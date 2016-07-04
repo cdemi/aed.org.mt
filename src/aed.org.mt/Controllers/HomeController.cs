@@ -32,7 +32,7 @@ namespace aed.org.mt.Controllers
 
             await table.CreateIfNotExistsAsync();
 
-            var sampleAED = new AEDEntity("Test", "99570116", 12.5643, 124415.2112);
+            var sampleAED = new AEDEntity("Test", "99570116", 12.5643, 12415.2112);
 
             await table.ExecuteAsync(TableOperation.Insert(sampleAED));
 
