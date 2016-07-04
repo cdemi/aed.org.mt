@@ -22,14 +22,51 @@
 @section scripts
 {
     <script>
+
+        var aedLocations = [{
+            lat: 35.900355,
+            lng: 14.494469,
+            inCharge: 'Christopher Demicoli',
+            locationName: 'Gaming Innovation Group Offices'
+        },
+        {
+            lat: 35.825692, 
+            lng: 14.524733,
+            inCharge: 'Christopher Demicoli',
+            locationName: 'My House'
+        },
+        {
+            lat: 36.051654, 
+            lng: 14.248142,
+            inCharge: 'Christopher Demicoli',
+            locationName: 'Gozo'
+        }];
+
         var map;
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 35.922337, lng: 14.388411 },
                 zoom: 11,
                 streetViewControl: false,
-                fullscreenControl:true
+                fullscreenControl: true
             });
+
+            var markers = []
+            for (var i in aedLocations) {
+                markers.push(new google.maps.Marker({
+                    position: { lat: aedLocations[i].lat, lng: aedLocations[i].lng },
+                    title: aedLocations[i].inCharge,
+                    map: map
+                }));
+            }
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < markers.length; i++) {
+                bounds.extend(markers[i].getPosition());
+            }
+
+            map.fitBounds(bounds);
+
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
