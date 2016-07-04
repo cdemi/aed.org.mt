@@ -255,3 +255,4 @@ paket-files/
 /src/aed.org.mt/Properties/PublishProfiles
 /src/aed.org.mt/wwwroot/js/*.min.js
 /src/aed.org.mt/wwwroot/css/*.min.css
+secretappsettings.json

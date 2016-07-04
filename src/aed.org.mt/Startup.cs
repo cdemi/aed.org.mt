@@ -18,6 +18,7 @@ namespace aed.org.mt
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"secretappsettings.json", optional: false)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
