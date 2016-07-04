@@ -34,26 +34,10 @@
 
 @section scripts
 {
-    <script>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
 
-        var aedLocations = [{
-            lat: 35.900355,
-            lng: 14.494469,
-            inCharge: 'Christopher Demicoli',
-            locationName: 'Gaming Innovation Group Offices'
-        },
-        {
-            lat: 35.825692,
-            lng: 14.524733,
-            inCharge: 'Christopher Demicoli',
-            locationName: 'My House'
-        },
-        {
-            lat: 36.069591,
-            lng: 14.189944,
-            inCharge: 'Christopher Demicoli',
-            locationName: 'Gozo'
-        }];
+    <script>
+        var aedLocations = @Json.Serialize(Model.AEDs, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
 
         var map;
         var markers = [];
@@ -67,9 +51,9 @@
 
             for (var i in aedLocations) {
                 markers.push(new google.maps.Marker({
-                    position: { lat: aedLocations[i].lat, lng: aedLocations[i].lng },
-                    title: aedLocations[i].inCharge,
-                    locationName: aedLocations[i].locationName,
+                    position: { lat: aedLocations[i].Latitude, lng: aedLocations[i].Longitude },
+                    title: aedLocations[i].PersonInCharge,
+                    locationName: aedLocations[i].LocationName,
                     map: map
                 }));
             }
