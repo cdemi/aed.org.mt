@@ -1,38 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using aed.com.mt;
+using aed.com.mt.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-using aed.com.mt.Models;
+using System.Threading.Tasks;
 
 namespace aed.org.mt.Controllers
 {
     public class HomeController : Controller
     {
-        private IConfigurationRoot configuration;
-        public HomeController(IConfigurationRoot IConfigurationRoot)
-        {
-            this.configuration = IConfigurationRoot;
-        }
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> About()
+        const string partitionKey = "Malta";
+        CloudTable table;
+        public HomeController(IConfigurationRoot configuration)
         {
             var azureConnectionString = configuration.GetValue<string>("MicrosoftAzureStorage:aedmalta_AzureStorageConnectionString");
             var storageAccount = CloudStorageAccount.Parse(azureConnectionString);
 
             var tableClient = storageAccount.CreateCloudTableClient();
-            var table = tableClient.GetTableReference("AEDs");
+            table = tableClient.GetTableReference("AEDs");
+        }
+        public async Task<IActionResult> Index()
+        {
+            var query = new TableQuery<AEDEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
+            var aeds = await table.ExecuteQueryAsync(query);
+            return View();
+        }
 
-            await table.CreateIfNotExistsAsync();
-
-            var sampleAED = new AEDEntity("Test","Christopher Demicoli", "99570116", 12.5643, 12415.2112);
+        public async Task<IActionResult> About()
+        {
+            var sampleAED = new AEDEntity(partitionKey, "Test", "Christopher Demicoli", "99570116", 12.5643, 12415.2112);
 
             await table.ExecuteAsync(TableOperation.Insert(sampleAED));
 
