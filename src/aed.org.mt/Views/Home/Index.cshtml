@@ -11,7 +11,6 @@
 <div class="row">
     <div class="col-md-12">
         <h2>AEDs in the Map</h2>
-        <div id="location"></div>
         <ul>
             <li><a href="#">AED 1</a></li>
             <li><a href="#">AED 2</a></li>
@@ -36,8 +35,8 @@
             locationName: 'My House'
         },
         {
-            lat: 36.051654, 
-            lng: 14.248142,
+            lat: 36.069591,
+            lng: 14.189944,
             inCharge: 'Christopher Demicoli',
             locationName: 'Gozo'
         }];
@@ -80,7 +79,7 @@
             }
 
             map.addListener('bounds_changed', function () {
-                $("#location").html(JSON.stringify(map.getBounds()));
+                //$("#location").html(JSON.stringify(map.getBounds()));
             });
         }
 
