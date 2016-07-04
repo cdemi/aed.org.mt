@@ -72,3 +72,8 @@ textarea {
 #closeToYou {
     display: none;
 }
+
+#topDisclaimer
+{
+    margin-top: 20px;
+}
