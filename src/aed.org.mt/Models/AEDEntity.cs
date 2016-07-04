@@ -5,9 +5,9 @@ namespace aed.com.mt.Models
 {
     public class AEDEntity : TableEntity
     {
-        public AEDEntity(string locationName, string personInCharge, string mobile, double latitude, double longitude)
+        public AEDEntity(string partitionKey, string locationName, string personInCharge, string mobile, double latitude, double longitude)
         {
-            PartitionKey = "Malta";
+            PartitionKey = partitionKey;
             RowKey = Guid.NewGuid().ToString();
 
             LocationName = locationName;
