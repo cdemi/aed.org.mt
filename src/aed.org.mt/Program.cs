@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace aed.com.mt
+namespace aed.org.mt
 {
     public class Program
     {

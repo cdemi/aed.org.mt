@@ -252,6 +252,6 @@ paket-files/
 *.sln.iml
 
 # Custom
-/src/aed.com.mt/Properties/PublishProfiles
-/src/aed.com.mt/wwwroot/js/*.min.js
-/src/aed.com.mt/wwwroot/css/*.min.css
+/src/aed.org.mt/Properties/PublishProfiles
+/src/aed.org.mt/wwwroot/js/*.min.js
+/src/aed.org.mt/wwwroot/css/*.min.css
