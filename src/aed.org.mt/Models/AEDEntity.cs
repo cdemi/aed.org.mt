@@ -5,20 +5,22 @@ namespace aed.com.mt.Models
 {
     public class AEDEntity : TableEntity
     {
-        public AEDEntity(string name, string mobile, double latitude, double longitude)
+        public AEDEntity(string locationName, string personInCharge, string mobile, double latitude, double longitude)
         {
-            this.PartitionKey = "Malta";
-            this.RowKey = Guid.NewGuid().ToString();
+            PartitionKey = "Malta";
+            RowKey = Guid.NewGuid().ToString();
 
-            this.Name = name;
-            this.Mobile = mobile;
-            this.Latitude = latitude;
-            this.Longitude = longitude;
+            LocationName = locationName;
+            PersonInCharge = personInCharge;
+            Mobile = mobile;
+            Latitude = latitude;
+            Longitude = longitude;
         }
 
         public AEDEntity() { }
 
-        public string Name { get; set; }
+        public string LocationName { get; set; }
+        public string PersonInCharge { get; set; }
         public string Mobile { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
