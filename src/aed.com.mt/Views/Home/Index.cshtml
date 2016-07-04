@@ -5,11 +5,7 @@
 <div class="row">
     <div class="col-md-9">
         <h2>Map</h2>
-        <iframe width="100%"
-                height="450"
-                frameborder="0" style="border:0"
-                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&q=Malta" allowfullscreen></iframe>
-
+        <div id="map"></div>
     </div>
     <div class="col-md-3">
         <h2>How to</h2>
@@ -19,3 +15,29 @@
         </ul>
     </div>
 </div>
+
+@section scripts
+{
+    <script>
+        var map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 35.922337, lng: 14.388411 },
+                zoom: 11
+            });
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    map.setCenter(pos);
+                });
+            }
+        }
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&callback=initMap" async defer></script>
+}

@@ -64,3 +64,8 @@ textarea {
     .navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
         border-color: #fff;
     }
+
+    #map
+    {
+        height: 500px;
+    }
