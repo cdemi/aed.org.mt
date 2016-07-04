@@ -8,6 +8,13 @@
         <div id="map"></div>
     </div>
 </div>
+<div id="closeToYou" class="row">
+    <div class="col-md-12">
+        <h2>AEDs close to you</h2>
+        <ul>
+        </ul>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <h2>AEDs in the Map</h2>
@@ -69,10 +76,7 @@
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
+                    var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
                     markers.push(new google.maps.Marker({
                         position: pos,
@@ -86,6 +90,13 @@
 
                     map.setCenter(pos);
                     map.setZoom(17);
+
+                    var closest = findClosestN(pos, 5);
+                    for (var i in closest) {
+                        $("#closeToYou ul").append($("<li>" + closest[i].getTitle() + " - " + closest[i].distance + "</li>"));
+                    }
+
+                    $("#closeToYou").show();
 
                     google.maps.event.addListener(map, 'tilesloaded', function () {
                         var anyAEDsNear = false;
@@ -117,6 +128,20 @@
             });
         }
 
+        function findClosestN(pt, numberOfResults) {
+            var closest = [];
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].distance = google.maps.geometry.spherical.computeDistanceBetween(pt, markers[i].getPosition());
+                closest.push(markers[i]);
+            }
+            closest.sort(sortByDist);
+            return closest.splice(0, numberOfResults);
+        }
+
+        function sortByDist(a, b) {
+            return (a.distance - b.distance)
+        }
+
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&libraries=geometry&callback=initMap" async defer></script>
 }

@@ -49,9 +49,9 @@ textarea {
         color: #fff;
     }
 
-    .navbar-inverse .navbar-nav > li > a:hover {
-        color: #a4d1b6;
-    }
+        .navbar-inverse .navbar-nav > li > a:hover {
+            color: #a4d1b6;
+        }
 
     .navbar-inverse .navbar-toggle {
         border-color: #fff;
@@ -65,7 +65,10 @@ textarea {
         border-color: #fff;
     }
 
-    #map
-    {
-        height: 500px;
-    }
+#map {
+    height: 500px;
+}
+
+#closeToYou {
+    display: none;
+}
