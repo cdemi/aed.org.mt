@@ -94,6 +94,7 @@
         }
 
         function initMap() {
+            getGeoLocation();
             ko.applyBindings(model);
 
             map = new google.maps.Map(document.getElementById('map'), {
@@ -121,7 +122,6 @@
         }
 
         $(document).ready(function () {
-            getGeoLocation();
         });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&libraries=geometry&callback=initMap" async defer></script>
