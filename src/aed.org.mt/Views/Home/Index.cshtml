@@ -25,9 +25,8 @@
     <div class="col-md-12">
         <h2>AEDs in the Map</h2>
         <div id="location"></div>
-        <ul>
-            <li><a href="#">AED 1</a></li>
-            <li><a href="#">AED 2</a></li>
+        <ul data-bind="foreach: aedLocations">
+            <li data-bind="text: LocationName"></li>
         </ul>
     </div>
 </div>
