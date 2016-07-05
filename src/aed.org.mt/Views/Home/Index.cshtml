@@ -43,8 +43,7 @@
             this.aedLocations = ko.observableArray(@Json.Serialize(Model.AEDs, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })),
             this.currentLocation = ko.observable(null);
             this.closestAEDs = ko.computed(function () {
-                if (that.currentLocation() != null)
-                {
+                if (that.currentLocation() != null) {
                     return that.aedLocations().sort(function (left, right) {
                         var distanceToLeft = distance(that.currentLocation().latitude, that.currentLocation().longitude, left.Latitude, left.Longitude);
                         var distanceToRight = distance(that.currentLocation().latitude, that.currentLocation().longitude, right.Latitude, right.Longitude);
@@ -55,15 +54,13 @@
                             return 1;
                         else
                             return 0;
-                    }).slice(0, 4);
-                }else
-                {
+                    }).slice(0, 3);
+                } else {
                     return [];
                 }
             });
             this.googleMapsReady = ko.observable(false);
         };
-        ko.applyBindings(model);
 
         function getGeoLocation() {
             if (navigator.geolocation) {
@@ -71,9 +68,9 @@
                     var latitude = position.coords.latitude;
                     var longitude = position.coords.longitude;
                     model.currentLocation({ latitude: latitude, longitude: longitude });
-                    
+
                     new google.maps.Marker({
-                        position: { lat:latitude, lng:longitude },
+                        position: { lat: latitude, lng: longitude },
                         title: 'Your Location',
                         map: map,
                         icon: {
@@ -81,6 +78,14 @@
                             scale: 5
                         }
                     });
+
+                    var bounds = new google.maps.LatLngBounds();
+                    bounds.extend(new google.maps.LatLng({ lat: model.currentLocation().latitude, lng: model.currentLocation().longitude }));
+                    for (var i = 0; i < model.closestAEDs().length; i++) {
+                        bounds.extend(new google.maps.LatLng({ lat: model.closestAEDs()[i].Latitude, lng: model.closestAEDs()[i].Longitude }));
+                    }
+                    map.fitBounds(bounds);
+
                 }, function error(msg) {
                 }, { maximumAge: 1000, timeout: Infinity, enableHighAccuracy: true });
 
@@ -89,6 +94,8 @@
         }
 
         function initMap() {
+            ko.applyBindings(model);
+
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 35.922337, lng: 14.388411 },
                 zoom: 11,
@@ -103,6 +110,12 @@
                     map: map
                 });
             }
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < model.aedLocations().length; i++) {
+                bounds.extend(new google.maps.LatLng({ lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude }));
+            }
+            map.fitBounds(bounds);
 
             model.googleMapsReady(true);
         }
