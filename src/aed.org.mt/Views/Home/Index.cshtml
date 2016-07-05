@@ -71,6 +71,16 @@
                     var latitude = position.coords.latitude;
                     var longitude = position.coords.longitude;
                     model.currentLocation({ latitude: latitude, longitude: longitude });
+                    
+                    new google.maps.Marker({
+                        position: { lat:latitude, lng:longitude },
+                        title: 'Your Location',
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 5
+                        }
+                    });
                 }, function error(msg) {
                 }, { maximumAge: 1000, timeout: Infinity, enableHighAccuracy: true });
 
@@ -85,6 +95,15 @@
                 streetViewControl: false,
                 fullscreenControl: true
             });
+
+            for (var i in model.aedLocations()) {
+                new google.maps.Marker({
+                    position: { lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude },
+                    title: model.aedLocations()[i].LocationName,
+                    map: map
+                });
+            }
+
             model.googleMapsReady(true);
         }
 
