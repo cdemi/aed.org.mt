@@ -105,15 +105,15 @@
             });
 
             for (var i in model.aedLocations()) {
-                setTimeout(function () {
+                setTimeout(function (loc) {
                     new google.maps.Marker({
-                        position: { lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude },
-                        title: model.aedLocations()[i].LocationName,
+                        position: { lat: loc.Latitude, lng: loc.Longitude },
+                        title: loc.LocationName,
                         animation: google.maps.Animation.DROP,
-                        image: 'https://aed.org.mt/images/aed_map_icon.png',
+                        icon: 'https://aed.org.mt/images/aed_map_icon.png',
                         map: map
                     });
-                }, i * 200)
+                }, i * 200, model.aedLocations()[i])
             }
 
             var bounds = new google.maps.LatLngBounds();
