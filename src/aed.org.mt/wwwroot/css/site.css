@@ -43,7 +43,14 @@ textarea {
 
     .navbar-inverse .navbar-brand {
         color: #fff;
+        padding: 0 15px;
     }
+
+        .navbar-inverse .navbar-brand .text, .navbar-inverse .navbar-brand .image {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 50px;
+        }
 
     .navbar-inverse .navbar-nav > li > a {
         color: #fff;
@@ -69,11 +76,7 @@ textarea {
     height: 500px;
 }
 
-#closeToYou {
-    display: none;
-}
 
-#topDisclaimer
-{
+#topDisclaimer {
     margin-top: 20px;
 }

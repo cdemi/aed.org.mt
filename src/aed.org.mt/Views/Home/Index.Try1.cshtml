@@ -1,0 +1,140 @@
+﻿@model HomeIndexModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div id="topDisclaimer" class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning">
+            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+            <strong>Remember:</strong> finding an AED should <strong>never</strong> take precedence over immediate, high-quality CPR!
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="map" class="img-rounded"></div>
+    </div>
+</div>
+<div id="closeToYou" class="row">
+    <div class="col-md-12">
+        <h2>AEDs close to you</h2>
+        <ul></ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h2>AEDs in the Map</h2>
+        <div id="location"></div>
+        <ul>
+            <li><a href="#">AED 1</a></li>
+            <li><a href="#">AED 2</a></li>
+        </ul>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
+
+    <script>
+        var model = {};
+        var aedLocations = @Json.Serialize(Model.AEDs, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
+
+        model.aedLocations = ko.observableArray(aedLocations);
+
+        var map;
+        var markers = [];
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 35.922337, lng: 14.388411 },
+                zoom: 11,
+                streetViewControl: false,
+                fullscreenControl: true
+            });
+
+            for (var i in aedLocations) {
+                markers.push(new google.maps.Marker({
+                    position: { lat: aedLocations[i].Latitude, lng: aedLocations[i].Longitude },
+                    title: aedLocations[i].PersonInCharge,
+                    locationName: aedLocations[i].LocationName,
+                    map: map
+                }));
+            }
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < markers.length; i++) {
+                bounds.extend(markers[i].getPosition());
+            }
+
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+                    markers.push(new google.maps.Marker({
+                        position: pos,
+                        title: 'Your Location',
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 5
+                        }
+                    }));
+
+                    map.setCenter(pos);
+                    map.setZoom(17);
+
+                    var closest = findClosestN(pos, 5);
+                    for (var i in closest) {
+                        $("#closeToYou ul").append($("<li>" + closest[i].getTitle() + " - " + closest[i].distance + "</li>"));
+                    }
+
+                    $("#closeToYou").show();
+
+                    google.maps.event.addListener(map, 'tilesloaded', function () {
+                        var anyAEDsNear = false;
+                        for (var i = 0; i < markers.length; i++) {
+                            if (map.getBounds().contains(markers[i].getPosition())) {
+                                anyAEDsNear = true;
+                                break;
+                            }
+                        }
+
+                        if (!anyAEDsNear)
+                            map.fitBounds(bounds);
+                    });
+
+                }, function () {
+                    map.fitBounds(bounds);
+                });
+            }
+            else {
+                map.fitBounds(bounds);
+            }
+
+            map.addListener('bounds_changed', function () {
+                $("#location").html("");
+                for (var i = 0; i < markers.length; i++) {
+                    if (map.getBounds().contains(markers[i].getPosition()))
+                        $("#location").html($("#location").html() + markers[i].locationName + "<br/>");
+                }
+            });
+        }
+
+        function findClosestN(pt, numberOfResults) {
+            var closest = [];
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].distance = google.maps.geometry.spherical.computeDistanceBetween(pt, markers[i].getPosition());
+                closest.push(markers[i]);
+            }
+            closest.sort(sortByDist);
+            return closest.splice(0, numberOfResults);
+        }
+
+        function sortByDist(a, b) {
+            return (a.distance - b.distance)
+        }
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&libraries=geometry&callback=initMap" async defer></script>
+}

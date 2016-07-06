@@ -12,23 +12,30 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <div id="map"></div>
+        <div id="map" class="img-rounded"></div>
     </div>
 </div>
-<div id="closeToYou" class="row">
-    <div class="col-md-12">
-        <h2>AEDs close to you</h2>
-        <ul></ul>
+<div style="height:20px"></div>
+<div class="row" >
+    <div class="col-md-6" data-bind="with: currentLocation">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-refresh"></a></h3></div>
+            <div class="panel-body">
+                <ul class="list-group" data-bind="foreach: $parent.closestAEDs">
+                    <li class="list-group-item"><span data-bind="text: LocationName"></span><span class="badge" data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span></li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <h2>AEDs in the Map</h2>
-        <div id="location"></div>
-        <ul>
-            <li><a href="#">AED 1</a></li>
-            <li><a href="#">AED 2</a></li>
-        </ul>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">AEDs in the Map</h3></div>
+            <div class="panel-body">
+                <ul class="list-group" data-bind="foreach: aedLocations">
+                    <li class="list-group-item" data-bind="text: LocationName"></li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -37,11 +44,75 @@
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
 
     <script>
-        var aedLocations = @Json.Serialize(Model.AEDs, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore });
-
         var map;
-        var markers = [];
+        var model = new function viewModel() {
+            var that = this;
+            this.aedLocations = ko.observableArray(@Json.Serialize(Model.AEDs, new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore })),
+            this.currentLocation = ko.observable(null);
+            this.closestAEDs = ko.computed(function () {
+                if (that.currentLocation() != null) {
+                    return that.aedLocations().sort(function (left, right) {
+                        var distanceToLeft = distance(that.currentLocation().latitude, that.currentLocation().longitude, left.Latitude, left.Longitude);
+                        var distanceToRight = distance(that.currentLocation().latitude, that.currentLocation().longitude, right.Latitude, right.Longitude);
+
+                        if (distanceToLeft < distanceToRight)
+                            return -1;
+                        else if (distanceToLeft > distanceToRight)
+                            return 1;
+                        else
+                            return 0;
+                    }).slice(0, 4);
+                } else {
+                    return [];
+                }
+            });
+            this.googleMapsReady = ko.observable(false);
+        };
+
+        var yourLocationMarker;
+
+        function getGeoLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                    model.currentLocation({ latitude: latitude, longitude: longitude });
+
+                    if (yourLocationMarker)
+                        yourLocationMarker.setPosition({ lat: latitude, lng: longitude });
+                    else {
+                        yourLocationMarker = new google.maps.Marker({
+                            position: { lat: latitude, lng: longitude },
+                            title: 'Your Location',
+                            map: map,
+                            icon: {
+                                url: 'https://aed.org.mt/images/yourlocation.png',
+                                size: new google.maps.Size(48, 48),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(24, 24),
+                                scaledSize: new google.maps.Size(30, 30)
+                            },
+                        });
+                    }
+
+                    var bounds = new google.maps.LatLngBounds();
+                    bounds.extend(new google.maps.LatLng({ lat: model.currentLocation().latitude, lng: model.currentLocation().longitude }));
+                    for (var i = 0; i < model.closestAEDs().length; i++) {
+                        bounds.extend(new google.maps.LatLng({ lat: model.closestAEDs()[i].Latitude, lng: model.closestAEDs()[i].Longitude }));
+                    }
+                    map.fitBounds(bounds);
+
+                }, function error(msg) {
+                }, { maximumAge: 1000, timeout: Infinity, enableHighAccuracy: true });
+
+            } else {
+            }
+        }
+
         function initMap() {
+            getGeoLocation();
+            ko.applyBindings(model);
+
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 35.922337, lng: 14.388411 },
                 zoom: 11,
@@ -49,89 +120,34 @@
                 fullscreenControl: true
             });
 
-            for (var i in aedLocations) {
-                markers.push(new google.maps.Marker({
-                    position: { lat: aedLocations[i].Latitude, lng: aedLocations[i].Longitude },
-                    title: aedLocations[i].PersonInCharge,
-                    locationName: aedLocations[i].LocationName,
-                    map: map
-                }));
+            for (var i in model.aedLocations()) {
+                setTimeout(function (loc) {
+                    new google.maps.Marker({
+                        position: { lat: loc.Latitude, lng: loc.Longitude },
+                        title: loc.LocationName,
+                        animation: google.maps.Animation.DROP,
+                        icon: {
+                            url: 'https://aed.org.mt/images/aed-marker-icon-small-min.png',
+                            size: new google.maps.Size(30, 45),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(15, 45)
+                        },
+                        map: map
+                    });
+                }, i * 200, model.aedLocations()[i])
             }
 
             var bounds = new google.maps.LatLngBounds();
-            for (var i = 0; i < markers.length; i++) {
-                bounds.extend(markers[i].getPosition());
+            for (var i = 0; i < model.aedLocations().length; i++) {
+                bounds.extend(new google.maps.LatLng({ lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude }));
             }
+            map.fitBounds(bounds);
 
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-                    markers.push(new google.maps.Marker({
-                        position: pos,
-                        title: 'Your Location',
-                        map: map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 5
-                        }
-                    }));
-
-                    map.setCenter(pos);
-                    map.setZoom(17);
-
-                    var closest = findClosestN(pos, 5);
-                    for (var i in closest) {
-                        $("#closeToYou ul").append($("<li>" + closest[i].getTitle() + " - " + closest[i].distance + "</li>"));
-                    }
-
-                    $("#closeToYou").show();
-
-                    google.maps.event.addListener(map, 'tilesloaded', function () {
-                        var anyAEDsNear = false;
-                        for (var i = 0; i < markers.length; i++) {
-                            if (map.getBounds().contains(markers[i].getPosition())) {
-                                anyAEDsNear = true;
-                                break;
-                            }
-                        }
-
-                        if (!anyAEDsNear)
-                            map.fitBounds(bounds);
-                    });
-
-                }, function () {
-                    map.fitBounds(bounds);
-                });
-            }
-            else {
-                map.fitBounds(bounds);
-            }
-
-            map.addListener('bounds_changed', function () {
-                $("#location").html("");
-                for (var i = 0; i < markers.length; i++) {
-                    if (map.getBounds().contains(markers[i].getPosition()))
-                        $("#location").html($("#location").html() + markers[i].locationName + "<br/>");
-                }
-            });
+            model.googleMapsReady(true);
         }
 
-        function findClosestN(pt, numberOfResults) {
-            var closest = [];
-            for (var i = 0; i < markers.length; i++) {
-                markers[i].distance = google.maps.geometry.spherical.computeDistanceBetween(pt, markers[i].getPosition());
-                closest.push(markers[i]);
-            }
-            closest.sort(sortByDist);
-            return closest.splice(0, numberOfResults);
-        }
-
-        function sortByDist(a, b) {
-            return (a.distance - b.distance)
-        }
-
+        $(document).ready(function () {
+        });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&libraries=geometry&callback=initMap" async defer></script>
 }

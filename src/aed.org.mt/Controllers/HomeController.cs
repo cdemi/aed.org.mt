@@ -33,7 +33,7 @@ namespace aed.org.mt.Controllers
         {
             var sampleAED = new AEDEntity(partitionKey, "Test", "Christopher Demicoli", "99570116", 12.5643, 12415.2112);
 
-            await table.ExecuteAsync(TableOperation.Insert(sampleAED));
+            //await table.ExecuteAsync(TableOperation.Insert(sampleAED));
 
             return View();
         }
