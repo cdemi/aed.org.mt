@@ -74,9 +74,11 @@
                         title: 'Your Location',
                         map: map,
                         icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 5
-                        }
+                            url: 'https://aed.org.mt/images/yourlocation.png',
+                            size: new google.maps.Size(48, 48),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(24, 24)
+                        },
                     });
 
                     var bounds = new google.maps.LatLngBounds();
