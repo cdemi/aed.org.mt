@@ -15,20 +15,29 @@
         <div id="map" class="img-rounded"></div>
     </div>
 </div>
+<div style="height:20px;"></div>
 <div id="closeToYou" class="row" data-bind="with: currentLocation">
     <div class="col-md-12">
-        <h2>AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-refresh"></a></h2>
-        <ul data-bind="foreach: $parent.closestAEDs">
-            <li><span data-bind="text: LocationName"></span> - <span data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span> away</li>
-        </ul>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-refresh"></a></h3></div>
+            <div class="panel-body">
+                <ul class="list-group" data-bind="foreach: $parent.closestAEDs">
+                    <li class="list-group-item"><span data-bind="text: LocationName"></span><span class="badge" data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span></li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
-        <h2>AEDs in the Map</h2>
-        <ul data-bind="foreach: aedLocations">
-            <li data-bind="text: LocationName"></li>
-        </ul>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">AEDs in the Map</h3></div>
+            <div class="panel-body">
+                <ul class="list-group" data-bind="foreach: aedLocations">
+                    <li class="list-group-item" data-bind="text: LocationName"></li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 

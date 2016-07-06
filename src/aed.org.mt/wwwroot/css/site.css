@@ -80,3 +80,8 @@ textarea {
 #topDisclaimer {
     margin-top: 20px;
 }
+
+.col-md-12 .list-group
+{
+    max-width:400px;
+}

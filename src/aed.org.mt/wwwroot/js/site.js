@@ -16,8 +16,8 @@ function metersBetween2Cordinates(lat1, lon1, lat2, lon2) {
 
 function humanReadableDistance(meters) {
     if (meters < 1000)
-        return Math.round(meters) + "m";
+        return Math.round(meters) + " m";
     else {
-        return (meters / 1000).toFixed(1) + "km";
+        return (meters / 1000).toFixed(1) + " km";
     }
 }
