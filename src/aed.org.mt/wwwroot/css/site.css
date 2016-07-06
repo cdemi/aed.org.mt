@@ -43,7 +43,7 @@ textarea {
 
     .navbar-inverse .navbar-brand {
         color: #fff;
-        padding: 0;
+        padding: 0 15px;
     }
 
         .navbar-inverse .navbar-brand .text, .navbar-inverse .navbar-brand .image {
