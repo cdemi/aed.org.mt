@@ -17,7 +17,7 @@
 </div>
 <div id="closeToYou" class="row" data-bind="with: currentLocation">
     <div class="col-md-12">
-        <h2>AEDs close to you</h2>
+        <h2>AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-refresh"></a></h2>
         <ul data-bind="foreach: $parent.closestAEDs">
             <li><span data-bind="text: LocationName"></span> - <span data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span> away</li>
         </ul>
@@ -62,6 +62,8 @@
             this.googleMapsReady = ko.observable(false);
         };
 
+        var yourLocationMarker;
+
         function getGeoLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -69,18 +71,22 @@
                     var longitude = position.coords.longitude;
                     model.currentLocation({ latitude: latitude, longitude: longitude });
 
-                    new google.maps.Marker({
-                        position: { lat: latitude, lng: longitude },
-                        title: 'Your Location',
-                        map: map,
-                        icon: {
-                            url: 'https://aed.org.mt/images/yourlocation.png',
-                            size: new google.maps.Size(48, 48),
-                            origin: new google.maps.Point(0, 0),
-                            anchor: new google.maps.Point(24, 24),
-                            scaledSize: new google.maps.Size(30, 30)
-                        },
-                    });
+                    if (yourLocationMarker)
+                        yourLocationMarker.setPosition({ lat: latitude, lng: longitude });
+                    else {
+                        yourLocationMarker = new google.maps.Marker({
+                            position: { lat: latitude, lng: longitude },
+                            title: 'Your Location',
+                            map: map,
+                            icon: {
+                                url: 'https://aed.org.mt/images/yourlocation.png',
+                                size: new google.maps.Size(48, 48),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(24, 24),
+                                scaledSize: new google.maps.Size(30, 30)
+                            },
+                        });
+                    }
 
                     var bounds = new google.maps.LatLngBounds();
                     bounds.extend(new google.maps.LatLng({ lat: model.currentLocation().latitude, lng: model.currentLocation().longitude }));
