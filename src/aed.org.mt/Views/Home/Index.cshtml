@@ -105,12 +105,15 @@
             });
 
             for (var i in model.aedLocations()) {
-                new google.maps.Marker({
-                    position: { lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude },
-                    title: model.aedLocations()[i].LocationName,
-                    animation: google.maps.Animation.DROP,
-                    map: map
-                });
+                setTimeout(function () {
+                    new google.maps.Marker({
+                        position: { lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude },
+                        title: model.aedLocations()[i].LocationName,
+                        animation: google.maps.Animation.DROP,
+                        image: 'https://aed.org.mt/images/aed_map_icon.png',
+                        map: map
+                    });
+                }, i * 200)
             }
 
             var bounds = new google.maps.LatLngBounds();
