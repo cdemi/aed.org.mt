@@ -108,6 +108,7 @@
                 new google.maps.Marker({
                     position: { lat: model.aedLocations()[i].Latitude, lng: model.aedLocations()[i].Longitude },
                     title: model.aedLocations()[i].LocationName,
+                    animation: google.maps.Animation.DROP,
                     map: map
                 });
             }
