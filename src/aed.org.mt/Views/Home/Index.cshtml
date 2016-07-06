@@ -110,7 +110,12 @@
                         position: { lat: loc.Latitude, lng: loc.Longitude },
                         title: loc.LocationName,
                         animation: google.maps.Animation.DROP,
-                        icon: 'https://aed.org.mt/images/aed_map_icon.png',
+                        icon: {
+                            url: 'https://aed.org.mt/images/aed-marker-icon-small-min.png',
+                            size: new google.maps.Size(30, 45),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(15, 45)
+                        },
                         map: map
                     });
                 }, i * 200, model.aedLocations()[i])
