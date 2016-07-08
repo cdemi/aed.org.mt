@@ -19,7 +19,7 @@
 <div class="row" >
     <div class="col-md-6" data-bind="with: currentLocation">
         <div class="panel panel-default">
-            <div class="panel-heading"><h3 class="panel-title">AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-refresh"></a></h3></div>
+            <div class="panel-heading"><h3 class="panel-title">AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-screenshot"></a></h3></div>
             <div class="panel-body">
                 <ul class="list-group" data-bind="foreach: $parent.closestAEDs">
                     <li class="list-group-item"><span data-bind="text: LocationName"></span><span class="badge" data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span></li>
