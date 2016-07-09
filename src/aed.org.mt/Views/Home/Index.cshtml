@@ -21,9 +21,9 @@
         <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">AEDs close to you <a href="#" onclick="getGeoLocation(); return false;" class="glyphicon glyphicon-map-marker"></a></h3></div>
             <div class="panel-body">
-                <ul class="list-group" data-bind="foreach: $parent.closestAEDs">
-                    <li class="list-group-item"><span data-bind="text: LocationName"></span><span class="badge" data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span></li>
-                </ul>
+                <div class="list-group" data-bind="foreach: $parent.closestAEDs">
+                    <a href="#" data-bind="click: clickedAED" class="list-group-item"><span data-bind="text: LocationName"></span><span class="badge" data-bind="text: humanReadableDistance(metersBetween2Cordinates(model.currentLocation().latitude, model.currentLocation().longitude, Latitude, Longitude))"></span></a>
+                </div>
             </div>
         </div>
     </div>
@@ -31,9 +31,9 @@
         <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">AEDs in the Map</h3></div>
             <div class="panel-body">
-                <ul class="list-group" data-bind="foreach: aedLocations">
-                    <li class="list-group-item" data-bind="text: LocationName"></li>
-                </ul>
+                <div class="list-group" data-bind="foreach: aedLocations">
+                    <a href="#" class="list-group-item" data-bind="text: LocationName, click: clickedAED"></a>
+                </div>
             </div>
         </div>
     </div>
@@ -70,6 +70,13 @@
         };
 
         var yourLocationMarker;
+
+        function clickedAED(aed)
+        {
+            map.panTo({ lat: aed.Latitude, lng: aed.Longitude });
+            map.setZoom(19);
+            return false;
+        }
 
         function getGeoLocation() {
             if (navigator.geolocation) {
@@ -109,6 +116,8 @@
             }
         }
 
+        
+
         function initMap() {
             getGeoLocation();
             ko.applyBindings(model);
@@ -118,6 +127,10 @@
                 zoom: 11,
                 streetViewControl: false,
                 fullscreenControl: true
+            });
+
+            var infowindow = new google.maps.InfoWindow({
+                content: 'test'
             });
 
             for (var i in model.aedLocations()) {
@@ -133,6 +146,8 @@
                             anchor: new google.maps.Point(15, 45)
                         },
                         map: map
+                    }).addListener('click', function () {
+                        infowindow.open(map, this);
                     });
                 }, i * 200, model.aedLocations()[i])
             }
