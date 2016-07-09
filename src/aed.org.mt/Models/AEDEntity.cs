@@ -5,7 +5,7 @@ namespace aed.org.mt.Models
 {
     public class AEDEntity : TableEntity
     {
-        public AEDEntity(string partitionKey, string locationName, string personInCharge, string mobile, double latitude, double longitude)
+        public AEDEntity(string partitionKey, string locationName, string personInCharge, string mobile, double latitude, double longitude, bool isApproved)
         {
             PartitionKey = partitionKey;
             RowKey = Guid.NewGuid().ToString();
@@ -15,6 +15,7 @@ namespace aed.org.mt.Models
             Mobile = mobile;
             Latitude = latitude;
             Longitude = longitude;
+            IsApproved = isApproved;
         }
 
         public AEDEntity() { }
@@ -24,5 +25,6 @@ namespace aed.org.mt.Models
         public string Mobile { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

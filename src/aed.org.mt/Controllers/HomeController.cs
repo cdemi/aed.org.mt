@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace aed.org.mt.Controllers
@@ -22,16 +23,22 @@ namespace aed.org.mt.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var query = new TableQuery<AEDEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
-            var aeds = await table.ExecuteQueryAsync(query);
-            return View(new HomeIndexModel {
+            //This is how it should be, unfortunately there is a bug in this version of the Azure Storage SDK so we have to do it another way
+            //var query = new TableQuery<AEDEntity>().Where($"PartitionKey eq '{partitionKey}' AND IsApproved eq true");
+            //var aeds = await table.ExecuteQueryAsync(query);
+
+            var query = new TableQuery<AEDEntity>().Where($"PartitionKey eq '{partitionKey}'");
+            var aeds = (await table.ExecuteQueryAsync(query)).Where(a => a.IsApproved);
+
+            return View(new HomeIndexModel
+            {
                 AEDs = aeds
             });
         }
 
         public async Task<IActionResult> About()
         {
-            var sampleAED = new AEDEntity(partitionKey, "Test", "Christopher Demicoli", "99570116", 12.5643, 12415.2112);
+            var sampleAED = new AEDEntity(partitionKey, "Test", "Christopher Demicoli", "99570116", 12.5643, 12415.2112, false);
 
             //await table.ExecuteAsync(TableOperation.Insert(sampleAED));
 

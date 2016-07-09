@@ -4,6 +4,6 @@ namespace aed.org.mt.Models
 {
     public class HomeIndexModel
     {
-        public IList<AEDEntity> AEDs { get; set; }
+        public IEnumerable<AEDEntity> AEDs { get; set; }
     }
 }
