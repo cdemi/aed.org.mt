@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Submit";
+}
+<h2>Submit an AED Location</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="LocationName">Location Name:</label>
+        <input id="LocationName" name="LocationName" type="text" class="form-control" placeholder="Location Name" />
+    </div>
+    <div class="form-group">
+        <label for="PersonInCharge">Person in Charge:</label>
+        <input id="PersonInCharge" name="PersonInCharge" type="text" class="form-control" placeholder="Person in Charge" />
+    </div>
+    <div class="form-group">
+        <label for="Mobile">Mobile:</label>
+        <input id="Mobile" name="Mobile" type="tel" class="form-control" placeholder="Mobile" />
+    </div>
+    <div class="form-group">
+        <label>Location:</label>
+        <input id="Latitude" name="Latitude" type="text" class="form-control" placeholder="Latitude" />
+        <input id="Longitude" name="Longitude" type="text" class="form-control" placeholder="Longitude"/>
+        <div id="map">
+
+        </div>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+
+@section scripts
+{
+
+    <script>
+        var map;
+        var marker;
+
+        function markerMoved()
+        {
+            $('#Latitude').val(marker.getPosition().lat);
+            $('#Longitude').val(marker.getPosition().lng);
+        }
+
+        function initMap() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: { lat: position.coords.latitude, lng: position.coords.longitude },
+                        zoom: 18,
+                        streetViewControl: false,
+                        fullscreenControl: true
+                    });
+
+                    marker = new google.maps.Marker({
+                        position: { lat: position.coords.latitude, lng: position.coords.longitude },
+                        title: 'Your AED',
+                        draggable: true,
+                        icon: {
+                            url: 'https://aed.org.mt/images/aed-marker-icon-small-min.png',
+                            size: new google.maps.Size(30, 45),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(15, 45)
+                        },
+                        map: map,
+                    });
+                    markerMoved();
+                    marker.addListener('dragend', markerMoved);
+
+                }, function error(msg) {
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: { lat: 35.922337, lng: 14.388411 },
+                        zoom: 18,
+                        streetViewControl: false,
+                        fullscreenControl: true
+                    });
+
+                    marker = new google.maps.Marker({
+                        position: { lat: 35.922337, lng: 14.388411 },
+                        title: 'Your AED',
+                        draggable: true,
+                        icon: {
+                            url: 'https://aed.org.mt/images/aed-marker-icon-small-min.png',
+                            size: new google.maps.Size(30, 45),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(15, 45)
+                        },
+                        map: map,
+                    });
+                    markerMoved();
+                    marker.addListener('dragend', markerMoved);
+                }, { maximumAge: 1000, timeout: Infinity, enableHighAccuracy: true });
+            }
+        }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIICHmQFj_9YYByQ9kPEpK9vlQLLgUj7w&libraries=geometry&callback=initMap" async defer></script>
+
+}

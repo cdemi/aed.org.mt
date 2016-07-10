@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,12 +37,25 @@ namespace aed.org.mt.Controllers
             });
         }
 
+        public async Task<IActionResult> Submit()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Submit(AEDEntity newAED)
+        {
+            newAED.PartitionKey = partitionKey;
+            newAED.RowKey = Guid.NewGuid().ToString();
+            newAED.IsApproved = false;
+
+            await table.ExecuteAsync(TableOperation.Insert(newAED));
+
+            return View("SubmitSuccess");
+        }
+
         public async Task<IActionResult> About()
         {
-            var sampleAED = new AEDEntity(partitionKey, "Test", "Christopher Demicoli", "99570116", 12.5643, 12415.2112, false);
-
-            //await table.ExecuteAsync(TableOperation.Insert(sampleAED));
-
             return View();
         }
 

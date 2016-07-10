@@ -5,10 +5,10 @@ namespace aed.org.mt.Models
 {
     public class AEDEntity : TableEntity
     {
-        public AEDEntity(string partitionKey, string locationName, string personInCharge, string mobile, double latitude, double longitude, bool isApproved)
+        public AEDEntity(string partitionKey, string rowKey, string locationName, string personInCharge, string mobile, double latitude, double longitude, bool isApproved)
         {
             PartitionKey = partitionKey;
-            RowKey = Guid.NewGuid().ToString();
+            RowKey = rowKey;
 
             LocationName = locationName;
             PersonInCharge = personInCharge;
