@@ -135,7 +135,7 @@
 
             for (var i in model.aedLocations()) {
                 setTimeout(function (loc) {
-                    new google.maps.Marker({
+                    loc.Marker = new google.maps.Marker({
                         position: { lat: loc.Latitude, lng: loc.Longitude },
                         title: loc.LocationName,
                         animation: google.maps.Animation.DROP,
